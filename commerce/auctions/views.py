@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Listing
 
 
 def index(request):
@@ -61,3 +62,39 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+@login_required
+def create_listing(request):
+    if request.method == "POST":
+        owner = request.user # research how to get the username
+        title = request.POST["title"]
+        image = request.POST["image"]
+        description = request.POST["description"]
+        category = request.POST["category"]
+
+        try:
+            start_price = float(request.POST["start-price"])
+        except ValueError:
+            return render(request,"auctions/create-listing.html", {
+                "message": "Error! Please enter a valid number for the start price."
+            })
+        
+        inputs = [title, image, description, category]
+        if any(x == "" for x in inputs):
+            return render(request,"auctions/create-listing.html", {
+                "message": "Error! Please fill in all required fields."
+            })
+
+        
+        listing = Listing(owner=owner, 
+                          title = title,
+                          image=image,
+                          description=description, 
+                          category=category, 
+                          start_price=start_price
+                          )
+        
+        listing.save()
+    
+    return render(request, "auctions/create-listing.html")
+        

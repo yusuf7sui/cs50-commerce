@@ -9,14 +9,15 @@ class Listing(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     watchers = models.ManyToManyField(User, blank=True, related_name="watchlist")
     title = models.CharField(max_length=32)
+    image = models.URLField(max_length=128)
     description = models.CharField(max_length=64)
-    price = models.FloatField()    
+    category = models.CharField(max_length=32)
+    start_price = models.FloatField()
 
 class Bid(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
     bidder = models.ForeignKey(User, on_delete= models.CASCADE, related_name="bids")
     bid = models.FloatField()
-
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
