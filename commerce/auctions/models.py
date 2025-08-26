@@ -12,7 +12,8 @@ class Listing(models.Model):
     image = models.URLField(max_length=128)
     description = models.CharField(max_length=64)
     category = models.CharField(max_length=32)
-    start_price = models.FloatField()
+    bid = models.FloatField()
+    is_active = models.BooleanField()
 
 class Bid(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")

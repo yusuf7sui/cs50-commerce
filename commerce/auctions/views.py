@@ -9,7 +9,10 @@ from .models import User, Listing
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    active_listings = Listing.objects.filter(is_active = True)
+    return render(request, "auctions/index.html", {
+        "listings": active_listings
+    })
 
 
 def login_view(request):
@@ -63,17 +66,18 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
 @login_required
 def create_listing(request):
     if request.method == "POST":
         owner = request.user # research how to get the username
-        title = request.POST["title"]
-        image = request.POST["image"]
-        description = request.POST["description"]
-        category = request.POST["category"]
+        title = request.POST["title"].strip()
+        image = request.POST["image"].strip()
+        description = request.POST["description"].strip()
+        category = request.POST["category"].strip()
 
         try:
-            start_price = float(request.POST["start-price"])
+            start_price = float(request.POST["start-price"].strip())
         except ValueError:
             return render(request,"auctions/create-listing.html", {
                 "message": "Error! Please enter a valid number for the start price."
@@ -85,16 +89,17 @@ def create_listing(request):
                 "message": "Error! Please fill in all required fields."
             })
 
-        
         listing = Listing(owner=owner, 
                           title = title,
                           image=image,
                           description=description, 
                           category=category, 
-                          start_price=start_price
+                          bid=start_price,
+                          is_active=True
                           )
         
         listing.save()
+        return HttpResponseRedirect(reverse("create-listing"))
     
     return render(request, "auctions/create-listing.html")
         
