@@ -109,13 +109,26 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("create-listing"))
     
     return render(request, "auctions/create-listing.html")
-        
+
+@login_required
+def listing_page_view(request, number):
+    if request.method == "POST":
+        pass
+    listing = Listing.objects.get(pk = number)
+    return render(request, "auctions/listing-page.html", {
+        "listing": listing,
+        "number": number
+    })
+
 @login_required
 def watchlist_view(request):
-    if request.method == "POST":
-        #TODO: When an user gives a bid it should be displayed
-        pass
     user = request.user
+    if request.method == "POST":
+        listing_id = request.POST["listing-id"]
+        listing = Listing.objects.get(pk=listing_id)
+        listing.watchers.remove(user)
+        return HttpResponseRedirect(reverse("watchlist"))
+
     watchlist = Listing.objects.filter(watchers = user)
     return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist
