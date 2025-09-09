@@ -5,17 +5,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Bid
 
 
 def index(request):
-    if request.method == "POST":
-        user = request.user
-        listing_id = request.POST["listing-id"]
-        listing = Listing.objects.get(pk=listing_id)
-        listing.watchers.add(user)
-        return HttpResponseRedirect(reverse("index"))
-    
     active_listings = Listing.objects.filter(is_active = True)
     return render(request, "auctions/index.html", {
         "listings": active_listings
@@ -101,7 +94,8 @@ def create_listing(request):
                           image=image,
                           description=description, 
                           category=category, 
-                          bid=start_price,
+                          start_price=start_price,
+                          current_bid = None,
                           is_active=True
                           )
         
@@ -110,14 +104,68 @@ def create_listing(request):
     
     return render(request, "auctions/create-listing.html")
 
+def place_bid(user, listing, bid):
+    
+    if listing.current_bid is None:
+        if bid < listing.start_price:
+            return "Your bid must be equal or higher than the starting price."
+    else:
+        if bid <= listing.current_bid:
+            return "Your bid must be higher than the current highest bid."
+        
+    new_bid = Bid(listing=listing, bidder=user, bid=bid) 
+    new_bid.save()
+    listing.current_bid = bid
+    listing.save()
+    return "Your Bid was successfully placed."
+    
+
 @login_required
 def listing_page_view(request, number):
-    if request.method == "POST":
-        pass
+    user = request.user
     listing = Listing.objects.get(pk = number)
+    if listing.watchers.filter(id=user.id).exists():
+        is_watched = True
+    else:
+        is_watched = False
+    
+    if request.method == "POST":
+        match request.POST["form-type"]:
+            case "close_listing":
+                listing.is_active = False
+                highest_bid = listing.bids.order_by("-bid").first()
+                if highest_bid:
+                    listing.winner = highest_bid.bidder
+                listing.save()
+                return HttpResponseRedirect(reverse("listing-page", kwargs={"number": number}))
+            case "place_bid":
+                try:
+                    bid = float(request.POST["bid"].strip())
+                except ValueError:
+                    return render(request,"auctions/listing-page.html", {
+                        "listing": listing,
+                        "number": number,
+                        "is_watched": is_watched,
+                        "message": "Error! Please enter a valid number."
+                    })
+                message = place_bid(user, listing, bid)
+                return render(request,"auctions/listing-page.html", {
+                        "listing": listing,
+                        "number": number,
+                        "is_watched": is_watched,
+                        "message": message
+                    })
+            case "add_watchlist":
+                listing.watchers.add(user)
+                is_watched = True
+            case "remove_watchlist":
+                listing.watchers.remove(user)
+                is_watched = False
+    
     return render(request, "auctions/listing-page.html", {
         "listing": listing,
-        "number": number
+        "number": number,
+        "is_watched": is_watched
     })
 
 @login_required

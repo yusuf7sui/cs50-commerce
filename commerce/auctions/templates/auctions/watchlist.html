@@ -15,17 +15,13 @@
                     <p> {{ listing.description }} </p>
                     <form action="{% url 'listing-page' number=listing.id %}" method="get">
                             {% csrf_token %}
-                            <div class="form-group">
-                                <input class="form-control" type="hidden" name="listing" value="{{ listing.id }}"><br>
-                            </div>
-                            <input class="btn btn-primary" type="submit" name="listing-page" value="View more">
+                            <input type="hidden" name="listing" value="{{ listing.id }}">
+                            <input class="btn btn-primary mt-3" type="submit" name="listing-page" value="View more">
                         </form>
                     <form action="{% url 'watchlist' %}" method="post">
                         {% csrf_token %}
-                        <div class="form-group">
-                            <input class="form-control" type="hidden" name="listing-id" value="{{ listing.id }}"><br>
-                        </div>
-                        <input class="btn btn-primary" type="submit" name="remove-listing" value="Remove from Watchlist">
+                        <input type="hidden" name="listing-id" value="{{ listing.id }}">
+                        <input class="btn btn-primary mt-3" type="submit" name="remove-listing" value="Remove from Watchlist">
                     </form>
                 </div>
             </div>

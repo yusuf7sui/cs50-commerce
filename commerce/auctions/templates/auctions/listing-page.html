@@ -9,17 +9,58 @@
             <img class="img-fluid" src="{{ listing.image }}" alt="{{ listing.title }}">
         </div>
         <p> {{ listing.description }} </p>
-        <h4> Price: ${{ listing.bid }} </h4>
-        <div>
-            <form action="{% url 'listing-page' number=number %}" method="post">
-                {% csrf_token %}
-                <div class="form-group">
+        <h3> Price: ${{ listing.start_price }} </h3>
+        {% if listing.current_bid %}
+            <h4> Currenty highest bid: {{listing.current_bid}}</h4>
+        {% endif %}
+
+        {% if message %}
+            <div class="alert alert-warning mt-3">
+                {{message}}
+            </div>    
+        {% endif %}
+        {% if listing.is_active %}
+            {% if request.user == listing.owner %}
+                <form action="{% url 'listing-page' number=listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form-type" value="close_listing">
+                    <input class="btn btn-primary mt-3" type="submit" name="close-auction" value="Close Auction">
+                </form>
+            {% else %}
+                <form action="{% url 'listing-page' number=listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form-type" value="place_bid">
+                    <div class="form-group">
                     <input class="form-control" type="text" name="bid" placeholder="Bid"><br>
-                </div>
-                <input class="btn btn-primary" type="submit" name="place-bid" value="Place Bid">
+                    </div>
+                    <input class="btn btn-primary mt-3" type="submit" name="place-bid" value="Place Bid">
+                </form>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning mt-3">
+                <p>This auctions has been closed.</p>
+                {% if request.user == listing.winner %}
+                    <p>Congratulations. You won the auction.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if not is_watched %}
+            <form action="{% url 'listing-page' number=listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden"  name="form-type" value="add_watchlist">
+                <input type="hidden" name="listing-id" value="{{ listing.id }}">
+                <input class="btn btn-primary mt-3" type="submit" name="add-watchlist" value="Add to Watchlist">
             </form>
-        </div>
-        <h4 class="mt-3"> Details <h4>
+        {% else %}
+            <form action="{% url 'listing-page' number=listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form-type" value="remove_watchlist">
+                <input type="hidden" name="listing-id" value="{{ listing.id }}">
+                <input class="btn btn-primary mt-3" type="submit" name="remove-listing" value="Remove from Watchlist">
+            </form>
+        {% endif %}
+
+        <h4 class="mt-3"> Details </h4>
         <ul>
             <li> Listed by: {{ listing.owner }}</li>
             <li> Category: {{ listing.category }}</li>

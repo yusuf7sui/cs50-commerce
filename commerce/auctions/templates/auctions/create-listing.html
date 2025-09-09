@@ -20,7 +20,9 @@
             <input class="form-control" type="text" name="category" placeholder="Category"><br>
         </div>
         {% if message %}    
-            {{message}}<br>
+        <div class="alert alert-warning mt-3">
+            {{message}}
+        </div>
         {% endif %}
         <input class="btn btn-primary" type="submit" name="create" value="Create">
     </form>

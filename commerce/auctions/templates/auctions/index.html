@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-md-8">
                     <h3> {{ listing.title }} </h3>
-                    <p> <strong>Price:</strong> ${{ listing.bid }} </p>
+                    <p> <strong>Price:</strong> ${{ listing.start_price }} </p>
                     <p> {{ listing.description }} </p>
                     {% if user.is_authenticated %}
                         <form action="{% url 'listing-page' number=listing.id %}" method="get">
@@ -20,13 +20,6 @@
                                 <input class="form-control" type="hidden" name="listing" value="{{ listing.id }}"><br>
                             </div>
                             <input class="btn btn-primary" type="submit" name="listing-page" value="View more">
-                        </form>
-                        <form action="{% url 'index' %}" method="post">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <input class="form-control" type="hidden" name="listing-id" value="{{ listing.id }}"><br>
-                            </div>
-                            <input class="btn btn-primary" type="submit" name="add-watchlist" value="Add to Watchlist">
                         </form>
                     {% endif %}
                 </div>
