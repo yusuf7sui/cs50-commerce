@@ -11,7 +11,7 @@
         <p> {{ listing.description }} </p>
         <h3> Price: ${{ listing.start_price }} </h3>
         {% if listing.current_bid %}
-            <h4> Currenty highest bid: {{listing.current_bid}}</h4>
+            <h4 class="text-muted"> Currenty highest bid: {{listing.current_bid}}</h4>
         {% endif %}
 
         {% if message %}
@@ -31,7 +31,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="form-type" value="place_bid">
                     <div class="form-group">
-                    <input class="form-control" type="text" name="bid" placeholder="Bid"><br>
+                        <input class="form-control" type="text" name="bid" placeholder="Bid"><br>
                     </div>
                     <input class="btn btn-primary mt-3" type="submit" name="place-bid" value="Place Bid">
                 </form>
@@ -48,23 +48,36 @@
             <form action="{% url 'listing-page' number=listing.id %}" method="post">
                 {% csrf_token %}
                 <input type="hidden"  name="form-type" value="add_watchlist">
-                <input type="hidden" name="listing-id" value="{{ listing.id }}">
                 <input class="btn btn-primary mt-3" type="submit" name="add-watchlist" value="Add to Watchlist">
             </form>
         {% else %}
             <form action="{% url 'listing-page' number=listing.id %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="form-type" value="remove_watchlist">
-                <input type="hidden" name="listing-id" value="{{ listing.id }}">
                 <input class="btn btn-primary mt-3" type="submit" name="remove-listing" value="Remove from Watchlist">
             </form>
         {% endif %}
 
         <h4 class="mt-3"> Details </h4>
         <ul>
-            <li> Listed by: {{ listing.owner }}</li>
-            <li> Category: {{ listing.category }}</li>
+            <li> <strong>By:</strong> {{ listing.owner }}</li>
+            <li> <strong>Category:</strong> {{ listing.category }}</li>
         </ul>
+        <h4 class="mt-3"> Comments </h4>
+        <form action="{% url 'listing-page' number=listing.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form-type" value="comment">
+            <div class="form-group">
+                <input class="form-control" type="text" name="comment" placeholder="Comment">
+            </div>
+            <input class="btn btn-primary" type="submit" name="confirm-comment" value="Comment">
+        </form>
+        {% for comment in comments %}
+            <div class="mt-4">
+                <p class="mb-1"> {{ comment.comment }} </p>
+                <p class="text-muted small"> <strong>By:</strong> {{ comment.author.username }} </p>
+            </div>
+        {% endfor %}
     </div>
         
 

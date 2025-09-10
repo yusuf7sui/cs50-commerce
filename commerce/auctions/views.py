@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Bid
+from .models import User, Listing, Bid, Comment
 
 
 def index(request):
@@ -128,6 +128,9 @@ def listing_page_view(request, number):
         is_watched = True
     else:
         is_watched = False
+
+    #Possible this code?
+    comments = Comment.objects.all()
     
     if request.method == "POST":
         match request.POST["form-type"]:
@@ -146,6 +149,7 @@ def listing_page_view(request, number):
                         "listing": listing,
                         "number": number,
                         "is_watched": is_watched,
+                        "comments": comments,
                         "message": "Error! Please enter a valid number."
                     })
                 message = place_bid(user, listing, bid)
@@ -153,6 +157,7 @@ def listing_page_view(request, number):
                         "listing": listing,
                         "number": number,
                         "is_watched": is_watched,
+                        "comments": comments,
                         "message": message
                     })
             case "add_watchlist":
@@ -161,11 +166,23 @@ def listing_page_view(request, number):
             case "remove_watchlist":
                 listing.watchers.remove(user)
                 is_watched = False
+            case "comment":
+                comment = request.POST["comment"]
+                if comment:
+                    user = request.user
+                    new_comment = Comment(
+                        listing = listing,
+                        author = user,
+                        comment = comment
+                    )
+                    new_comment.save()
+                comments = listing.comments.all()
     
     return render(request, "auctions/listing-page.html", {
         "listing": listing,
         "number": number,
-        "is_watched": is_watched
+        "is_watched": is_watched,
+        "comments": comments
     })
 
 @login_required
