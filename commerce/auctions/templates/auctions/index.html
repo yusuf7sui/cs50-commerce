@@ -14,13 +14,7 @@
                     <p> <strong>Price:</strong> ${{ listing.start_price }} </p>
                     <p> {{ listing.description }} </p>
                     {% if user.is_authenticated %}
-                        <form action="{% url 'listing-page' number=listing.id %}" method="get">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <input class="form-control" type="hidden" name="listing" value="{{ listing.id }}"><br>
-                            </div>
-                            <input class="btn btn-primary" type="submit" name="listing-page" value="View more">
-                        </form>
+                        <a class="btn btn-primary" href="{% url 'listing-page' number=listing.id %}">View more</a>
                     {% endif %}
                 </div>
             </div>

@@ -128,8 +128,6 @@ def listing_page_view(request, number):
         is_watched = True
     else:
         is_watched = False
-
-    #Possible this code?
     comments = Comment.objects.all()
     
     if request.method == "POST":
@@ -197,4 +195,20 @@ def watchlist_view(request):
     watchlist = Listing.objects.filter(watchers = user)
     return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist
+    })
+
+def categories_view(request):
+    listings = Listing.objects.all()
+    categories = set()
+    for listing in listings:
+        categories.add(listing.category)
+    return render(request, "auctions/categories.html", {
+        "categories": categories
+    })
+
+def specific_category_view(request, category_name):
+    listings = Listing.objects.filter(category = category_name, is_active = True)
+    return render(request, "auctions/specific-category.html", {
+        "category_name": category_name,
+        "listings": listings
     })

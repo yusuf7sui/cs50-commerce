@@ -13,9 +13,7 @@
                     <h3> {{ listing.title }} </h3>
                     <p> <strong>Price:</strong> ${{ listing.bid }} </p>
                     <p> {{ listing.description }} </p>
-                    <form action="{% url 'listing-page' number=listing.id %}" method="get">
-                            <input class="btn btn-primary mt-3" type="submit" name="listing-page" value="View more">
-                        </form>
+                    <a class="btn btn-primary mt-3" href="{% url 'listing-page' number=listing.id %}">View more</a>
                     <form action="{% url 'watchlist' %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="listing-id" value="{{ listing.id }}">
@@ -24,7 +22,6 @@
                 </div>
             </div>
         </div>
-        
     {% endfor %}
 
 {% endblock %}
