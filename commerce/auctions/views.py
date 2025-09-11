@@ -128,7 +128,7 @@ def listing_page_view(request, number):
         is_watched = True
     else:
         is_watched = False
-    comments = Comment.objects.all()
+    comments = listing.comments.all()
     
     if request.method == "POST":
         match request.POST["form-type"]:
