@@ -1,11 +1,7 @@
 # CS50 - Commerce
 
-The project is a web-based encyclopedia created as a personal educational exercise. 
+The project is an online auction website created as a personal educational exercise. 
 It's based on [CS50W Project 2: Commerce](https://cs50.harvard.edu/web/projects/2/commerce/), from Harvard's CS50 course *Web Programming with Python and JavaScript*. The base code was downloaded from [commerce.zip](https://cdn.cs50.net/web/2020/spring/projects/2/commerce.zip) provided by CS50.
-
-## TODOs
-- Installation instructions
-- Usage details  
 
 ## Installation
 1. Download Python Version 3.10.0: 
@@ -39,7 +35,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-4. After starting the server, open the following URL on your browser:
+4. After starting the server, open the following URL on the browser:
 http://localhost:8000
 
 ## Features
