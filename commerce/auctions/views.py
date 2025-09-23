@@ -77,7 +77,7 @@ def create_listing(request):
         category = request.POST["category"].strip()
 
         try:
-            start_price = float(request.POST["start-price"].strip())
+            start_price = round(float(request.POST["start-price"].strip()), 2)
         except ValueError:
             return render(request,"auctions/create-listing.html", {
                 "message": "Error! Please enter a valid number for the start price."
@@ -141,7 +141,7 @@ def listing_page_view(request, number):
                 return HttpResponseRedirect(reverse("listing-page", kwargs={"number": number}))
             case "place_bid":
                 try:
-                    bid = float(request.POST["bid"].strip())
+                    bid = round(float(request.POST["bid"].strip()), 2)
                 except ValueError:
                     return render(request,"auctions/listing-page.html", {
                         "listing": listing,
